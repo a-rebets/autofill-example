@@ -1,4 +1,5 @@
 FROM node:alpine
+RUN mkdir -p /srv/files
 RUN touch /srv/files/database.db
 WORKDIR /app
 COPY . .
