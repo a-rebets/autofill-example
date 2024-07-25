@@ -1,0 +1,193 @@
+---
+import { db, Users } from "astro:db";
+let errors = { name: "", email: "", form: "" };
+
+if (Astro.request.method === "POST") {
+  try {
+    const formData = await Astro.request.formData();
+    const name = formData.get("name");
+    const email = formData.get("email");
+    const address = formData.get("address");
+    const tel = formData.get("tel");
+    const country = formData.get("country");
+    const postalCode = formData.get("postalCode");
+    const cardNumber = formData.get("cardNumber");
+    const cardExpDate = formData.get("cardExpDate");
+    const yearOfBirth = formData.get("yearOfBirth");
+
+    // Basic validation
+    if (typeof name !== "string" || name.trim() === "") {
+      errors.name = "Name is required.";
+    }
+    if (typeof email !== "string" || email.trim() === "") {
+      errors.email = "Email is required.";
+    }
+
+    if (!errors.name && !errors.email) {
+      const userIds = await db
+        .insert(Users)
+        .values({
+          name,
+          email,
+          address,
+          tel,
+          country,
+          postalCode,
+          cardNumber,
+          cardExpDate,
+          yearOfBirth,
+        })
+        .returning({ insertedId: Users.id });
+      Astro.cookies.set("userId", userIds[0].insertedId.toString(), {
+        path: "/",
+        httpOnly: true,
+      });
+      return Astro.redirect("/data");
+    } else {
+      errors.form = "Please correct the errors above.";
+    }
+  } catch (error) {
+    console.error(error);
+    errors.form = "An unexpected error occurred. Please try again.";
+  }
+}
+---
+
+<style is:global>
+  html,
+  body {
+    text-size-adjust: none;
+    height: 100%;
+    width: 100%;
+    font-size: 24px;
+  }
+</style>
+<main class="w-full h-screen flex flex-col justify-center">
+  <form
+    method="POST"
+    class="relative w-2/3 xl:w-fit mx-auto p-6 xl:p-4 bg-white shadow-md rounded-2xl xl:rounded-xl h-96 xl:h-52 overflow-hidden"
+  >
+    <label for="name" class="block text-xl xl:text-xs font-medium text-gray-700"
+      >Name</label
+    >
+    <input
+      id="name"
+      name="name"
+      type="text"
+      autocomplete="name"
+      class="mt-1 block w-full p-6 xl:p-1 border border-gray-300 rounded-xl xl:rounded xl:text-sm"
+      required
+    />
+
+    <label
+      for="email"
+      class="block text-xl xl:text-xs font-medium text-gray-700 mt-4"
+      >Email</label
+    >
+    <input
+      id="email"
+      name="email"
+      type="email"
+      autocomplete="email"
+      class="mt-1 block w-full p-6 xl:p-1 border border-gray-300 rounded-xl xl:rounded xl:text-sm"
+      required
+    />
+
+    <label
+      for="address"
+      class="block text-sm font-medium text-gray-700 mt-4 opacity-0"
+      >Address</label
+    >
+    <input
+      id="address"
+      name="address"
+      type="text"
+      autocomplete="address-line1"
+      class="mt-1 block w-full p-2 border border-gray-300 rounded-md opacity-0"
+    />
+
+    <label
+      for="tel"
+      class="block text-sm font-medium text-gray-700 mt-4 opacity-0"
+      >Phone Number</label
+    >
+    <input
+      id="tel"
+      name="tel"
+      type="tel"
+      autocomplete="tel"
+      class="mt-1 block w-full p-2 border border-gray-300 rounded-md opacity-0"
+    />
+
+    <label
+      for="postalCode"
+      class="block text-sm font-medium text-gray-700 mt-4 opacity-0"
+      >Postal Code</label
+    >
+    <input
+      id="postalCode"
+      name="postalCode"
+      type="text"
+      autocomplete="postal-code"
+      class="mt-1 block w-full p-2 border border-gray-300 rounded-md opacity-0"
+    />
+
+    <label
+      for="country"
+      class="block text-sm font-medium text-gray-700 mt-4 opacity-0"
+      >Country</label
+    >
+    <input
+      id="country"
+      name="country"
+      type="text"
+      autocomplete="country"
+      class="mt-1 block w-full p-2 border border-gray-300 rounded-md opacity-0"
+    />
+
+    <label
+      for="cardNumber"
+      class="block text-sm font-medium text-gray-700 mt-4 opacity-0"
+      >Credit Card Number</label
+    >
+    <input
+      id="cardNumber"
+      name="cardNumber"
+      type="text"
+      autocomplete="cc-number"
+      class="mt-1 block w-full p-2 border border-gray-300 rounded-md opacity-0"
+    />
+
+    <label
+      for="cardExpDate"
+      class="block text-sm font-medium text-gray-700 mt-4 opacity-0"
+      >Credit Card Expiry Date</label
+    >
+    <input
+      id="cardExpDate"
+      name="cardExpDate"
+      type="text"
+      autocomplete="cc-exp"
+      class="mt-1 block w-full p-2 border border-gray-300 rounded-md opacity-0"
+    />
+
+    <label
+      for="yearOfBirth"
+      class="block text-sm font-medium text-gray-700 mt-4 opacity-0"
+      >Year of Birth</label
+    >
+    <input
+      id="yearOfBirth"
+      name="yearOfBirth"
+      type="text"
+      autocomplete="bday-year"
+      class="mt-1 block w-full p-2 border border-gray-300 rounded-md opacity-0"
+    />
+
+    <button
+      type="submit"
+      class="absolute bottom-6 w-10/12 bg-blue-500 text-white py-4 px-6 xl:py-2 xl:px-4 text-xl xl:text-xs rounded-xl xl:rounded hover:bg-blue-600 left-1/2 -translate-x-1/2"
+      >Login</button
+    >
+  </form>
+</main>
