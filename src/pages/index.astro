@@ -1,20 +1,16 @@
 ---
+import Layout from "../layouts/SiteLayout.astro";
 Astro.cookies.delete("userId", { path: "/" });
+export const prerender = true;
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Fake site</title>
-  </head>
-  <body class="h-screen flex items-center justify-center bg-gray-100">
+<Layout title="Home">
+  <main class="h-screen flex items-center justify-center">
     <a
       href="/login"
-      class="bg-blue-500 text-white py-3 px-6 rounded-md text-lg hover:bg-blue-600"
+      class="bg-blue-500 text-white py-5 xl:py-3 px-8 xl:px-6 rounded-2xl xl:rounded-md text-lg hover:bg-blue-600"
     >
       Let's begin
     </a>
-  </body>
-</html>
+  </main>
+</Layout>

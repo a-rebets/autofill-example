@@ -1,54 +1,51 @@
 ---
 import { eq } from "astro:db";
 import { db, Users } from "astro:db";
+import Layout from "../layouts/SiteLayout.astro";
 const userId = Astro.cookies.get("userId")?.value;
-
 let users;
 if (userId) {
   users = await db.select().from(Users).where(eq(Users.id, +userId));
 }
 ---
 
-<style is:global>
-  @media (min-width: 1280px) {
-    html,
-    body {
-      text-size-adjust: none;
-      height: 100%;
-      width: 100%;
-      font-size: 24px;
-    }
-  }
-  html,
-  body {
-    text-size-adjust: none;
-    height: 100%;
-    width: 100%;
-    font-size: 30px;
-  }
-</style>
-<h2 class="text-2xl font-bold text-center mt-10">User Data</h2>
-<div class="flex w-full justify-center h-screen">
-  <div class="flex flex-col w-fit items-center">
-    <ul
-      class="max-w-2xl mx-auto mt-6 mb-20 bg-white shadow-md rounded-md p-6 space-y-4"
-    >
-      {
-        users.map((user) => (
-          <li class="p-4 border border-gray-200 rounded-md">
-            {Object.entries(user).map(([key, value]) => (
-              <p>
-                <strong>{key}:</strong> {value}
-              </p>
-            ))}
-          </li>
-        ))
-      }
-    </ul>
-    <a
-      href="/"
-      class="w-80 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 text-center"
-      >Return to main</a
-    >
-  </div>
-</div>
+<Layout title="Result">
+  <main class="flex w-full justify-center h-screen">
+    <div class="flex flex-col w-fit items-center">
+      <h2 class="text-2xl font-bold text-center mt-10">User Data</h2>
+      <ul
+        class="max-w-2xl mx-auto my-6 bg-white shadow-xl xl:shadow-md rounded-2xl xl:rounded-md p-6 space-y-4"
+      >
+        {
+          users ? (
+            users.map((user) => (
+              <li class="p-4 border border-gray-200 rounded-md">
+                {Object.entries(user).map(([key, value]) => (
+                  <p class="text-base">
+                    <strong>{key}:</strong> {value}
+                  </p>
+                ))}
+              </li>
+            ))
+          ) : (
+            <p>No data yet 🤷‍♀️</p>
+          )
+        }
+      </ul>
+      <p
+        class="max-w-96 xl:max-w-[32rem] font-light text-base xl:text-sm text-gray-500 text-pretty text-center pt-6 pb-10 xl:pb-12 xl:pt-8"
+      >
+        Explanation - some of the input fields were colored white and were
+        overflowing the container but the overflow was hidden and covered with a
+        button. Pay to attention to the little autofill pop up when entering
+        personal data on the internet. Bad actors can steal more info than you
+        think you provided
+      </p>
+      <a
+        href="/"
+        class="w-80 bg-blue-500 text-white py-4 xl:py-2 px-6 xl:px-4 rounded-2xl xl:rounded-md hover:bg-blue-600 text-center text-lg xl:text-base"
+        >Return to main</a
+      >
+    </div>
+  </main>
+</Layout>
